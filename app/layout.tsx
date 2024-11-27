@@ -1,10 +1,5 @@
-import { Inter } from 'next/font/google'
-import localFont from 'next/font/local'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
-const telegrafBold = localFont({ src: './fonts/Telegraf UltraBold 800.otf', variable: '--font-telegraf-bold' })
-const telegraf = localFont({ src: './fonts/Telegraf UltraBold 800.otf', variable: '--font-telegraf' })
 
 export const metadata = {
   title: 'Zama dApps',
@@ -17,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${telegraf.variable} ${telegrafBold.variable}`}>
-      <body className={`${telegraf.className} bg-[#ffd209]`}>
+    <html lang="en" >
+      <body className={`bg-[#ffd209] font-telegraf`}>
         <div className="min-h-screen flex flex-col">
           {children}
         </div>

@@ -9,6 +9,11 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+		fontFamily: {
+			'telegraf': ['Telegraf', 'sans-serif'],
+			'telegraf-bold': ['TelegrafBold', 'sans-serif'],
+			'telegraf-light': ['TelegrafLight', 'sans-serif']
+		  },
   		colors: {
   			background: 'var(--background)',
   			foreground: 'var(--foreground)'

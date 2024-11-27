@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ChevronDown } from 'lucide-react'
 
 declare global {
     interface Window {
@@ -16,6 +23,14 @@ export function ConnectButton() {
 
   useEffect(() => {
     checkConnection()
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.on('accountsChanged', handleAccountsChanged)
+    }
+    return () => {
+      if (typeof window.ethereum !== 'undefined') {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
+      }
+    }
   }, [])
 
   async function checkConnection() {
@@ -57,10 +72,58 @@ export function ConnectButton() {
     }
   }
 
+  async function disconnectWallet() {
+    setIsConnected(false)
+    setAddress('')
+  }
+
+  async function changeAccount() {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_requestPermissions',
+          params: [{ eth_accounts: {} }]
+        })
+      } catch (error) {
+        console.error("An error occurred while changing the account:", error)
+      }
+    }
+  }
+
+  function handleAccountsChanged(accounts: string[]) {
+    if (accounts.length > 0) {
+      setIsConnected(true)
+      setAddress(accounts[0])
+    } else {
+      setIsConnected(false)
+      setAddress('')
+    }
+  }
+
+  if (!isConnected) {
+    return (
+      <Button onClick={connectWallet} variant="outline" className="bg-white text-gray-800 hover:bg-gray-100">
+        Connect Wallet
+      </Button>
+    )
+  }
+
   return (
-    <Button onClick={connectWallet} variant="outline" className="bg-white text-gray-800 hover:bg-gray-100">
-      {isConnected ? `Connected: ${String(address).slice(0, 6)}...${String(address).slice(-4)}` : 'Connect Wallet'}
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="bg-white text-gray-800 hover:bg-gray-100">
+          {String(address).slice(0, 6)}...{String(address).slice(-4)}
+          <ChevronDown className="ml-2 h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={changeAccount}>
+          Change Account
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={disconnectWallet}>
+          Disconnect
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
-
